@@ -13,4 +13,3 @@ def create_app(connection: str) -> Flask:
     app.config.backup_service = BackupService(sql_config)
     sql_config.metadata.create_all(checkfirst=True)
     return app
-#
