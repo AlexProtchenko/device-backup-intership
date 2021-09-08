@@ -11,9 +11,9 @@ def describe_table(metadata: MetaData) -> Table:
     return Table(
         "backups",
         metadata,
-        Column('id', String, primary_key=True),
+        Column('id', String(36), primary_key=True),
         Column('binary', LargeBinary),
-        Column('time', String, nullable=False)
+        Column('time', String(32), nullable=False)
     )
 
 
