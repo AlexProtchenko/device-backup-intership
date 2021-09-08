@@ -29,6 +29,12 @@ class BackupsRepository:
             rows = connection.execute(statement).all()
         return [row.binary for row in rows]
 
+    def get_latest_time(self):
+        statement = BACKUPS.select()
+        with self.engine.begin() as connection:
+            rows = connection.execute(statement).all()
+        return [row.time for row in rows]
+
     def add(self, backup: Backup):
         statement = BACKUPS.insert().values(
             id=backup.test_id,

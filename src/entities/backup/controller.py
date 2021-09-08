@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from datetime import timezone,datetime
+from datetime import timezone, datetime
 from src.entities.backup.model import Backup
 from flask import Blueprint, jsonify, current_app as app, request
 import uuid
@@ -9,7 +9,13 @@ backup_controller_api = Blueprint('backup_controller_api', __name__)
 
 @backup_controller_api.route('/api/backups', methods=["GET"])
 def get_backups():
-    obj = app.config.backup_repository.get()
+    obj = app.config.backup_service.get()
+    return jsonify(obj), HTTPStatus.OK
+
+
+@backup_controller_api.route('/api/backups/time', methods=["GET"])
+def get_time_backups():
+    obj = app.config.backup_service.get()
     return jsonify(obj), HTTPStatus.OK
 
 
@@ -21,5 +27,5 @@ def post_backup():
     binary = payload
     time = datetime.now(tz=timezone.utc)
     backup = Backup(test_id, str(binary), time)
-    obj = app.config.backup_repository.add(backup)
+    obj = app.config.backup_service.create(backup)
     return '', HTTPStatus.OK
