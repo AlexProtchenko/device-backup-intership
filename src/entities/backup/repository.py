@@ -1,5 +1,5 @@
-from sqlalchemy import MetaData, Table, Column, String, TIMESTAMP, Text
-import uuid
+from sqlalchemy import MetaData, Table, Column, String, LargeBinary
+import base64
 
 from src.entities.backup.model import Backup
 from src.sql_config import SqlConfig
@@ -12,7 +12,7 @@ def describe_table(metadata: MetaData) -> Table:
         "backups",
         metadata,
         Column('id', String, primary_key=True),
-        Column('binary', Text),
+        Column('binary', LargeBinary),
         Column('time', String, nullable=False)
     )
 
@@ -27,13 +27,15 @@ class BackupsRepository:
         statement = BACKUPS.select()
         with self.engine.begin() as connection:
             rows = connection.execute(statement).all()
-        return [row.binary for row in rows]
+            data_list = [base64.b64encode(row.binary) for row in rows]
+        return data_list[-1]
 
     def get_latest_time(self):
         statement = BACKUPS.select()
         with self.engine.begin() as connection:
             rows = connection.execute(statement).all()
-        return [row.time for row in rows]
+            time_list = [row.time for row in rows]
+        return time_list[-1]
 
     def add(self, backup: Backup):
         statement = BACKUPS.insert().values(

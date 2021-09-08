@@ -2,3 +2,5 @@
 .idea/
 /src/__pycache__/
 /src/test.db
+/src/entities/backup/__pycache__/
+/src/test.db-journal
