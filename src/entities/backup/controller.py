@@ -1,5 +1,7 @@
 from http import HTTPStatus
 from datetime import timezone, datetime
+
+from src.entities.backup.exception import CustomException, NoDataException
 from src.entities.backup.model import Backup
 from flask import Blueprint, jsonify, current_app as app, request
 import uuid
@@ -30,3 +32,12 @@ def post_backup():
     backup = Backup(test_id, binary, time)
     obj = app.config.backup_service.create(backup)
     return '', HTTPStatus.OK
+
+
+@backup_controller_api.errorhandler(CustomException)
+def handle_exception(e: NoDataException):
+    response = {
+        'statusCode': e.status_code,
+        'message': e.message
+    }
+    return jsonify(response), e.status_code

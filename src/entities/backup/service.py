@@ -1,3 +1,4 @@
+from src.entities.backup.exception import DataException
 from src.entities.backup.model import Backup
 from src.entities.backup.repository import BackupsRepository
 from src.sql_config import SqlConfig
@@ -8,7 +9,11 @@ class BackupService:
         self.backup_repo = BackupsRepository(sql_config)
 
     def create(self, backup: Backup):
-        self.backup_repo.add(backup)
+
+        if 1024 * 1024 < len(backup.binary) or 1024 * 10 > len(backup.binary):
+            raise DataException('Not allowed size')
+        else:
+            self.backup_repo.add(backup)
 
     def get_data(self):
         return self.backup_repo.get()
