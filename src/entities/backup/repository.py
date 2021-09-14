@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Table, Column, String, LargeBinary
+from sqlalchemy import MetaData, Table, Column, String, LargeBinary, desc
 import base64
 
 from src.entities.backup.model import Backup
@@ -23,23 +23,36 @@ class BackupsRepository:
         BACKUPS = describe_table(sql_config.metadata)
         self.engine = sql_config.engine
 
-    def get(self):
-        statement = BACKUPS.select()
+    def get_latest_backup(self):
+        statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
         with self.engine.begin() as connection:
-            rows = connection.execute(statement).all()
-            data_list = [base64.b64encode(row.binary) for row in rows]
-        return data_list[-1]
+            row = connection.execute(statement).first()
+        return base64.b64encode(row.binary)
 
     def get_latest_time(self):
-        statement = BACKUPS.select()
+        statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
+        with self.engine.begin() as connection:
+            row = connection.execute(statement).first()
+        return row.time  # todo json [id: uuid, create time: time]
+
+    def get_uuid(self):
+        statement = BACKUPS.select(BACKUPS.c.time)
         with self.engine.begin() as connection:
             rows = connection.execute(statement).all()
-            time_list = [row.time for row in rows]
-        return time_list[-1]
+            result = []
+            for row in rows:
+                result.append([row.time, row.id])
+        return result
+
+    def get_backup(self, backup_id: str):
+        statement = BACKUPS.select().where(BACKUPS.c.id == str(backup_id))
+        with self.engine.begin() as connection:
+            rows = connection.execute(statement).all()
+        return [base64.b64encode(row.binary) for row in rows]
 
     def add(self, backup: Backup):
         statement = BACKUPS.insert().values(
-            id=backup.test_id,
+            id=backup.backup_id,
             binary=backup.binary,
             time=backup.time
         )

@@ -1,6 +1,9 @@
+import datetime
+
+
 class Backup:
-    def __init__(self, test_id: str, binary: bin, time):
-        self.test_id = test_id
+    def __init__(self, backup_id: str, binary: bin, time: datetime.datetime):
+        self.backup_id = backup_id
         self.binary = binary
         self.time = time
 

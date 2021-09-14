@@ -1,5 +1,3 @@
-# pylint: disable=too-few-public-methods
-# pylint: disable=missing-class-docstring
 import os
 import dotenv
 
