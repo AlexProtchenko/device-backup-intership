@@ -1,5 +1,4 @@
 import base64
-
 import requests
 
 
@@ -14,7 +13,9 @@ def test_backup_create_data():
 
     response = requests.request(
         method='GET',
-        url='http://127.0.0.1:5000/api/backups/'
+        url='http://127.0.0.1:5000/api/backups/latest'
     )
     assert response.status_code == 200
-    assert base64.b64encode(binary_input) == response.text
+    code = str(base64.b64encode(binary_input))
+    code2 = response.text
+    assert code[2:-1] == code2[3:-3]

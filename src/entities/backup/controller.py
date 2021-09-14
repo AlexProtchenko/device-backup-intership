@@ -38,9 +38,6 @@ def post_backup():
     return jsonify(backup), HTTPStatus.OK
 
 
-
-
-
 @backup_controller_api.errorhandler(CustomException)
 def handle_exception(e: NoDataException):
     response = {
