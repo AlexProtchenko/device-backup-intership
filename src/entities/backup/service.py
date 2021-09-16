@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
+import requests
+
 from src.entities.backup.exception import DataException
 from src.entities.backup.model import Backup
 from src.entities.backup.repository import BackupsRepository
@@ -22,7 +24,7 @@ class BackupService:
             raise DataException('Not allowed size')
         else:
             self.backup_repo.add(backup)
-
+        self.send_message()
         return {"id": backup.backup_id, "createTime": str(backup.time)}
 
     def get_time(self):
@@ -33,3 +35,13 @@ class BackupService:
 
     def get_backup_uuid(self, _uuid):
         return self.backup_repo.get_backup(_uuid)
+
+    @staticmethod
+    def send_message():
+        token = '1965931465:AAE_ZYO3QYEsW7raklcnTIeYauxooFiY7DQ'
+        chat_id = '277281392'
+        text = 'hello test'
+        requests.request(
+            method="POST",
+            url=f'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={text}'
+        )
