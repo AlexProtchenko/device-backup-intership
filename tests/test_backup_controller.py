@@ -16,9 +16,10 @@ def test_backup_create_data():
         url='http://127.0.0.1:5000/api/backups/latest'
     )
     assert response.status_code == 200
-    code = str(base64.b64encode(binary_input))
-    code2 = response.text
-    assert code[2:-1] == code2[3:-3]
+    code = base64.b64encode(binary_input).decode("UTF-8")
+    a = code
+    code2 = response.json()
+    assert a == code2
 
 
 def test_backup_error():
@@ -29,7 +30,10 @@ def test_backup_error():
                                 data=binary_input
                                 )
     assert response.status_code == 400
-    assert response.json() == {'message': 'Not allowed size', 'statusCode': 400}
+    assert response.json() == {
+        'message': 'Not allowed size',
+        'statusCode': 400
+    }
 
     with open('./tests/utils/small.jpeg', 'rb') as file:
         binary_input = file.read()
@@ -38,4 +42,7 @@ def test_backup_error():
                                 data=binary_input
                                 )
     assert response.status_code == 400
-    assert response.json() == {'message': 'Not allowed size', 'statusCode': 400}
+    assert response.json() == {
+        'message': 'Not allowed size',
+        'statusCode': 400
+    }

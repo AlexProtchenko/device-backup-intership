@@ -8,7 +8,7 @@ backup_controller_api = Blueprint('backup_controller_api', __name__)
 
 @backup_controller_api.route('/api/backups/latest', methods=["GET"])
 def get_backups():
-    obj = str(app.config.backup_service.get_data())
+    obj = app.config.backup_service.get_data()
     return jsonify(obj), HTTPStatus.OK
 
 
@@ -26,7 +26,7 @@ def get_time_uuid():
 
 @backup_controller_api.route('/api/backups/<uuid:_uuid>', methods=['GET'])
 def get_backup_uuid(_uuid):
-    obj = str(app.config.backup_service.get_backup_uuid(_uuid))
+    obj = app.config.backup_service.get_backup_uuid(_uuid)
     return jsonify(obj), HTTPStatus.OK
 
 

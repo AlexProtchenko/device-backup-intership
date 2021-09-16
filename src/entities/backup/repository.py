@@ -25,19 +25,21 @@ class BackupsRepository:
 
     def get_latest_backup(self):
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
-        with self.engine.begin() as connection:
+        with self.engine.connect() as connection:
             row = connection.execute(statement).first()
-        return base64.b64encode(row.binary)
+            encoded = base64.b64encode(row.binary)
+            result = encoded.decode("UTF-8")
+        return result
 
     def get_latest_time(self):
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
-        with self.engine.begin() as connection:
+        with self.engine.connect() as connection:
             row = connection.execute(statement).first()
         return row.time  # todo json [id: uuid, create time: time]
 
     def get_uuid(self):
         statement = BACKUPS.select(BACKUPS.c.time)
-        with self.engine.begin() as connection:
+        with self.engine.connect() as connection:
             rows = connection.execute(statement).all()
             result = []
             for row in rows:
@@ -46,9 +48,11 @@ class BackupsRepository:
 
     def get_backup(self, backup_id: str):
         statement = BACKUPS.select().where(BACKUPS.c.id == str(backup_id))
-        with self.engine.begin() as connection:
-            rows = connection.execute(statement).all()
-        return [base64.b64encode(row.binary) for row in rows]
+        with self.engine.connect() as connection:
+            row = connection.execute(statement).one_or_none()
+            encoded = base64.b64encode(row.binary)
+            result = encoded.decode("UTF-8")
+        return result
 
     def add(self, backup: Backup):
         statement = BACKUPS.insert().values(
