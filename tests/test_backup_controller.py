@@ -8,7 +8,7 @@ def test_backup_create_data(host):
     response = requests.request(method='POST',
                                 url=f'{host}/api/backups/save',
                                 data=binary_input
-                                )  # todo dotenv
+                                )
     assert response.status_code == 200
     response_get = requests.request(method='GET',
                                     url=f'{host}/api/backups/latest/',
