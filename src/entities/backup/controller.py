@@ -6,13 +6,7 @@ from flask import Blueprint, jsonify, current_app as app, request
 backup_controller_api = Blueprint('backup_controller_api', __name__)
 
 
-@backup_controller_api.route('/api/backups/latest', methods=["GET"])
-def get_backups():
-    obj = app.config.backup_service.get_data()
-    return jsonify(obj), HTTPStatus.OK
-
-
-@backup_controller_api.route('/api/backups/latest/time/', methods=["GET"])
+@backup_controller_api.route('/api/backups/latest/', methods=["GET"])
 def get_time_backups():
     obj = app.config.backup_service.get_time()
     return jsonify(obj), HTTPStatus.OK

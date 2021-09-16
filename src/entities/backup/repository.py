@@ -23,19 +23,11 @@ class BackupsRepository:
         BACKUPS = describe_table(sql_config.metadata)
         self.engine = sql_config.engine
 
-    def get_latest_backup(self):
-        statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
-        with self.engine.connect() as connection:
-            row = connection.execute(statement).first()
-            encoded = base64.b64encode(row.binary)
-            result = encoded.decode("UTF-8")
-        return result
-
     def get_latest_time(self):
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
         with self.engine.connect() as connection:
             row = connection.execute(statement).first()
-        return row.time  # todo json [id: uuid, create time: time]
+        return {"id": row.id, "createTime": row.time}
 
     def get_uuid(self):
         statement = BACKUPS.select(BACKUPS.c.time)
@@ -43,7 +35,7 @@ class BackupsRepository:
             rows = connection.execute(statement).all()
             result = []
             for row in rows:
-                result.append([row.time, row.id])
+                result.append({"createTme": row.time, "id": row.id})
         return result
 
     def get_backup(self, backup_id: str):

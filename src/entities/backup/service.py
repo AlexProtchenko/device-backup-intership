@@ -25,9 +25,6 @@ class BackupService:
 
         return {"id": backup.backup_id, "createTime": str(backup.time)}
 
-    def get_data(self):
-        return self.backup_repo.get_latest_backup()
-
     def get_time(self):
         return self.backup_repo.get_latest_time()
 

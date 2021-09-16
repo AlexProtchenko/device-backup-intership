@@ -10,16 +10,17 @@ def test_backup_create_data():
                                 data=binary_input
                                 )  # todo dotenv
     assert response.status_code == 200
-
-    response = requests.request(
-        method='GET',
-        url='http://127.0.0.1:5000/api/backups/latest'
-    )
-    assert response.status_code == 200
-    code = base64.b64encode(binary_input).decode("UTF-8")
-    a = code
-    code2 = response.json()
-    assert a == code2
+    response_get = requests.request(method='GET',
+                                    url='http://127.0.0.1:5000/api/backups/latest/',
+                                    )
+    answer = response_get.json()
+    assert response.json() == answer
+    _id = answer["id"]
+    response_get_data = requests.request(method='GET',
+                                         url=f'http://127.0.0.1:5000/api/backups/{_id}',
+                                         )
+    data = base64.b64encode(binary_input).decode("UTF-8")
+    assert response_get_data.json() == data
 
 
 def test_backup_error():
