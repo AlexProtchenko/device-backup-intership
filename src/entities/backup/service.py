@@ -4,7 +4,7 @@ from threading import Thread
 
 import requests
 
-from src.entities.backup.exception import DataException
+from src.entities.backup.exception import DataException, BadRequestException
 from src.entities.backup.model import Backup
 from src.entities.backup.repository import BackupsRepository
 from src.sql_config import SqlConfig
@@ -48,3 +48,9 @@ class BackupService:
                 method="POST",
                 url=f'https://api.telegram.org/bot{self._token}/sendMessage?chat_id={chat_id}&text={text}'
             )
+
+    def add_id(self, _id):
+        try:
+            return self.backup_repo.insert_subs_id(_id)
+        except Exception:
+            raise BadRequestException('Chat id exist')

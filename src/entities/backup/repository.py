@@ -22,31 +22,39 @@ def describe_subs_table(metadata: MetaData) -> Table:
     return Table(
         "subs",
         metadata,
-        Column('id', Integer, primary_key=True, unique=True)
+        Column('id', Integer, primary_key=True, autoincrement=True),
+        Column('chat_id', Integer, unique=True)
     )
 
 
 class BackupsRepository:
-    def __init__(self, sql_config: SqlConfig):
+    def __init__(self, sql_config: SqlConfig) -> None:
         global BACKUPS
         global SUBS
         SUBS = describe_subs_table(sql_config.metadata)
         BACKUPS = describe_table(sql_config.metadata)
         self.engine = sql_config.engine
 
-    def select_all_id(self):
+    def insert_subs_id(self, sub_id: int) -> None:
+        statement = SUBS.insert().values(
+            chat_id=sub_id
+        )
+        with self.engine.begin() as connection:
+            connection.execute(statement)
+
+    def select_all_id(self) -> list[str]:
         statement = SUBS.select()
         with self.engine.connect() as connection:
             rows = connection.execute(statement).all()
         return [row.id for row in rows]
 
-    def get_latest_time(self):
+    def get_latest_time(self) -> dict:
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
         with self.engine.connect() as connection:
             row = connection.execute(statement).first()
         return {"id": row.id, "createTime": row.time}
 
-    def get_uuid(self):
+    def get_uuid(self) -> list[dict]:
         statement = BACKUPS.select(BACKUPS.c.time)
         with self.engine.connect() as connection:
             rows = connection.execute(statement).all()
@@ -55,7 +63,7 @@ class BackupsRepository:
                 result.append({"createTme": row.time, "id": row.id})
         return result
 
-    def get_backup(self, backup_id: str):
+    def get_backup(self, backup_id: str) -> str:
         statement = BACKUPS.select().where(BACKUPS.c.id == str(backup_id))
         with self.engine.connect() as connection:
             row = connection.execute(statement).one_or_none()
@@ -63,7 +71,7 @@ class BackupsRepository:
             result = encoded.decode("UTF-8")
         return result
 
-    def add(self, backup: Backup):
+    def add(self, backup: Backup) -> None:
         statement = BACKUPS.insert().values(
             id=backup.backup_id,
             binary=backup.binary,

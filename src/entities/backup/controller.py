@@ -26,10 +26,16 @@ def get_backup_uuid(_uuid):
 
 @backup_controller_api.route('/api/backups/save', methods=["POST"])
 def post_backup():
-    request.method = 'POST'
     binary = request.data
     backup = app.config.backup_service.create(binary)
     return jsonify(backup), HTTPStatus.OK
+
+
+@backup_controller_api.route('/api/insert-sub', methods=["POST"])
+def post_subs_id():
+    payload = request.json
+    app.config.backup_service.add_id(payload["id"])
+    return '', HTTPStatus.OK
 
 
 @backup_controller_api.errorhandler(CustomException)

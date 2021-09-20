@@ -1,4 +1,6 @@
 import base64
+import random
+
 import requests
 
 
@@ -47,3 +49,13 @@ def test_backup_error(host):
         'message': 'Not allowed size',
         'statusCode': 400
     }
+
+
+def test_subs_id(host):
+    id_input = {"id": random.randint(1000000, 9999999)}
+    response = requests.request(method='POST',
+                                url=f'{host}/api/insert-sub',
+                                json=id_input
+                                )
+    assert response.status_code == 200
+

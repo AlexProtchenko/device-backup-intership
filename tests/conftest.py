@@ -3,4 +3,5 @@ import pytest
 
 @pytest.fixture(scope="session")
 def host():
-    return 'http://127.0.0.1:5000'
+    # return 'http://82.148.19.206:8080'
+    return 'http://172.20.40.128:8080'
