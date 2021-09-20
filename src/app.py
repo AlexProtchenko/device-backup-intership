@@ -6,7 +6,8 @@ from src.sql_config import SqlConfig
 from src.entities.backup.controller import backup_controller_api
 
 
-def create_app(config: AppConfig) -> Flask:
+def create_app() -> Flask:
+    config = AppConfig()
     app = Flask(__name__)
     sql_config = SqlConfig(config.connection_string)
     app.register_blueprint(backup_controller_api)

@@ -8,6 +8,6 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
-CMD ["python", "-m", "src"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:8080", "'src.app:create_app()'"]
 
 EXPOSE 8080

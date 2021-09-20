@@ -10,4 +10,4 @@ class AppConfig:
         port = os.getenv('PORT')
         ip = os.getenv('IP')
         self.ip = ip if ip else "0.0.0.0"
-        self.port = port if port else 9097
+        self.port = port if port else 8080
