@@ -44,10 +44,13 @@ class BackupService:
         ids = self.backup_repo.select_all_id()
         text = f"New backup!\nId: {payload['id']}\nCreate time: {payload['createTime']}"
         for chat_id in ids:
-            requests.request(
+            url_ = f'https://api.telegram.org/bot{self._token}/sendMessage?chat_id={chat_id}&text={text}'
+            response = requests.request(
                 method="POST",
-                url=f'https://api.telegram.org/bot{self._token}/sendMessage?chat_id={chat_id}&text={text}'
+                url=url_
             )
+            print(response.status_code)
+            print(url_)
 
     def add_id(self, _id):
         try:
