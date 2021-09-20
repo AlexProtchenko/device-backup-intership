@@ -43,10 +43,10 @@ class BackupsRepository:
             connection.execute(statement)
 
     def select_all_id(self) -> list[str]:
-        statement = SUBS.select()
+        statement = SUBS.select(SUBS.c.chat_id)
         with self.engine.connect() as connection:
             rows = connection.execute(statement).all()
-        return [row.id for row in rows]
+        return [row.chat_id for row in rows]
 
     def get_latest_time(self) -> dict:
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))
