@@ -10,4 +10,4 @@ RUN poetry install
 
 CMD ["python", "-m", "src"]
 
-EXPOSE 9097
+EXPOSE 8080
