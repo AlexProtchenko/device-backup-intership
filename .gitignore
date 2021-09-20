@@ -5,3 +5,4 @@
 /src/entities/backup/__pycache__/
 /src/test.db-journal
 .env
+/test.db

@@ -1,10 +1,11 @@
-from sqlalchemy import MetaData, Table, Column, String, LargeBinary, desc
+from sqlalchemy import MetaData, Table, Column, String, LargeBinary, desc, Integer
 import base64
 
 from src.entities.backup.model import Backup
 from src.sql_config import SqlConfig
 
 BACKUPS: Table
+SUBS: Table
 
 
 def describe_table(metadata: MetaData) -> Table:
@@ -17,11 +18,27 @@ def describe_table(metadata: MetaData) -> Table:
     )
 
 
+def describe_subs_table(metadata: MetaData) -> Table:
+    return Table(
+        "subs",
+        metadata,
+        Column('id', Integer, primary_key=True, unique=True)
+    )
+
+
 class BackupsRepository:
     def __init__(self, sql_config: SqlConfig):
         global BACKUPS
+        global SUBS
+        SUBS = describe_subs_table(sql_config.metadata)
         BACKUPS = describe_table(sql_config.metadata)
         self.engine = sql_config.engine
+
+    def select_all_id(self):
+        statement = SUBS.select()
+        with self.engine.connect() as connection:
+            rows = connection.execute(statement).all()
+        return [row.id for row in rows]
 
     def get_latest_time(self):
         statement = BACKUPS.select().order_by(desc(BACKUPS.c.time))

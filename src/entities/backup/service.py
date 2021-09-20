@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timezone
+from threading import Thread
 
 import requests
 
@@ -10,8 +11,9 @@ from src.sql_config import SqlConfig
 
 
 class BackupService:
-    def __init__(self, sql_config: SqlConfig):
+    def __init__(self, sql_config: SqlConfig, token: str):
         self.backup_repo = BackupsRepository(sql_config)
+        self._token = token
 
     def create(self, binary: bytes):
         backup = Backup(
@@ -24,8 +26,10 @@ class BackupService:
             raise DataException('Not allowed size')
         else:
             self.backup_repo.add(backup)
-        self.send_message()
-        return {"id": backup.backup_id, "createTime": str(backup.time)}
+        result = {"id": backup.backup_id, "createTime": str(backup.time)}
+        Thread(target=self.notify_subs, args=[result]).start()
+        self.notify_subs(result)
+        return result
 
     def get_time(self):
         return self.backup_repo.get_latest_time()
@@ -36,12 +40,11 @@ class BackupService:
     def get_backup_uuid(self, _uuid):
         return self.backup_repo.get_backup(_uuid)
 
-    @staticmethod
-    def send_message():
-        token = '1965931465:AAE_ZYO3QYEsW7raklcnTIeYauxooFiY7DQ'
-        chat_id = '277281392'
-        text = 'hello test'
-        requests.request(
-            method="POST",
-            url=f'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={text}'
-        )
+    def notify_subs(self, payload: dict):
+        ids = self.backup_repo.select_all_id()
+        text = f"New backup!\nId: {payload['id']}\nCreate time: {payload['createTime']}"
+        for chat_id in ids:
+            requests.request(
+                method="POST",
+                url=f'https://api.telegram.org/bot{self._token}/sendMessage?chat_id={chat_id}&text={text}'
+            )

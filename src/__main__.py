@@ -5,4 +5,4 @@ config = AppConfig()
 app = create_app(config)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=config.ip, port=config.port)

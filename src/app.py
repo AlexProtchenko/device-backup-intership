@@ -10,6 +10,6 @@ def create_app(config: AppConfig) -> Flask:
     app = Flask(__name__)
     sql_config = SqlConfig(config.connection_string)
     app.register_blueprint(backup_controller_api)
-    app.config.backup_service = BackupService(sql_config)
+    app.config.backup_service = BackupService(sql_config, config.token_)
     sql_config.metadata.create_all(checkfirst=True)
     return app
