@@ -27,7 +27,7 @@ class BackupService:
         else:
             self.backup_repo.add(backup)
         result = {"id": backup.backup_id, "createTime": str(backup.time)}
-        self.notify_subs(result)
+        Thread(target=self.notify_subs, args=[result]).start()
         return result
 
     def get_time(self):
