@@ -13,7 +13,7 @@ def test_backup_create_data(host):
                                 )
     assert response.status_code == 200
     response_get = requests.request(method='GET',
-                                    url=f'{host}/api/backups/latest/',
+                                    url=f'{host}/api/backups/latest',
                                     )
     answer = response_get.json()
     assert response.json() == answer
